@@ -2,7 +2,7 @@
   "expo": {
     "name": "푸드렌즈",
     "slug": "food-lens",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/app_icon.png",
     "scheme": "foodlens",
@@ -26,7 +26,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.anonymous.foodlens"
+      "package": "com.anonymous.foodlens",
+      "versionCode": 2
     },
     "web": {
       "output": "static",
