@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "푸드렌즈",
+    "slug": "food-lens",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app_icon.png",
+    "scheme": "foodlens",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/images/app_icon.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "식품 원재료명을 촬영하여 AI 분석을 위해 카메라 접근이 필요합니다.",
+        "NSPhotoLibraryUsageDescription": "식품 원재료명 사진을 불러오기 위해 갤러리 접근이 필요합니다."
+      },
+      "bundleIdentifier": "com.anonymous.food-lens"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000",
+        "foregroundImage": "./assets/images/app_icon.png",
+        "monochromeImage": "./assets/images/app_icon.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.foodlens"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "식품 원재료명을 촬영하여 AI 분석을 위해 카메라 접근이 필요합니다."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "식품 원재료명 사진을 불러오기 위해 갤러리 접근이 필요합니다."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#208AEF",
+          "android": {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 76
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cba955db-1c87-498f-8142-37ec51498dff"
+      }
+    }
+  }
+}

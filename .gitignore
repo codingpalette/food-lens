@@ -1,0 +1,66 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native (generated)
+/ios
+/android
+.kotlin/
+
+# Metro
+.metro-health-check*
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Environment
+.env
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+
+# Certificates & Keys
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.p7b
+*.key
+*.pem
+*.mobileprovision
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Supabase temp
+supabase/.temp/
+
+# AI Agents
+.claude/
+.omc/
+.cursor/
+.windsurf/
+.aider*
+.codeium/
+.continue/
+.copilot/
+.github/copilot/
+.bolt/
+.v0/
+
+# Misc
+app-example
