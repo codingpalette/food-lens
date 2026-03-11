@@ -11,12 +11,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandColors } from '@/constants/theme';
+import { useGuestUsage } from '@/hooks/useGuestUsage';
 import { useAuth } from '@/providers/auth-provider';
 import type { AnalysisMode } from '@/types/analysis';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { isGuest, remaining, limitReached } = useGuestUsage();
   const [mode, setMode] = useState<AnalysisMode>('single');
 
   const openCamera = () => {
@@ -93,6 +95,13 @@ export default function HomeScreen() {
             ? '로그인 사용자는 분석 기록이 자동 저장됩니다.'
             : '지금도 분석은 가능하고, 로그인하면 기록이 서버에 저장됩니다.'}
         </Text>
+        {isGuest ? (
+          <Text style={[styles.accountText, limitReached && styles.usageWarning]}>
+            {limitReached
+              ? '오늘의 무료 분석을 모두 사용했습니다'
+              : `오늘 남은 무료 분석: ${remaining}회`}
+          </Text>
+        ) : null}
       </View>
 
       <View style={styles.modeSelector}>
@@ -211,6 +220,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: BrandColors.charcoal,
+  },
+  usageWarning: {
+    color: BrandColors.red,
+    fontWeight: '600',
   },
   modeSelector: {
     flexDirection: 'row',

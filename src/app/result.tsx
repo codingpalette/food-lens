@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, LogIn } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnalysisResultContent } from '@/components/analysis-result-content';
 import { BrandColors } from '@/constants/theme';
+import { useGuestUsage } from '@/hooks/useGuestUsage';
 import { useAuth } from '@/providers/auth-provider';
 import { analyzeSingleProduct, compareProducts } from '@/services/aiApi';
 import { persistAnalysisRecord } from '@/services/supabase/analysisHistory';
@@ -26,6 +27,7 @@ import type {
 export default function ResultScreen() {
   const router = useRouter();
   const { initialized, user } = useAuth();
+  const { isGuest, limitReached, loading: usageLoading, increment } = useGuestUsage();
   const { imageUri, imageUriA, imageUriB, mode } = useLocalSearchParams<{
     imageUri: string;
     imageUriA?: string;
@@ -42,7 +44,17 @@ export default function ResultScreen() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const persistedKeyRef = useRef<string | null>(null);
 
+  const [limitBlocked, setLimitBlocked] = useState(false);
+
   useEffect(() => {
+    if (usageLoading) return;
+
+    if (isGuest && limitReached) {
+      setLimitBlocked(true);
+      setLoading(false);
+      return;
+    }
+
     const analyze = async () => {
       try {
         setLoading(true);
@@ -55,9 +67,11 @@ export default function ResultScreen() {
           }
           const result = await compareProducts(imageUriA, imageUriB);
           setComparisonResult(result);
+          if (isGuest) await increment();
         } else {
           const result = await analyzeSingleProduct(imageUri ?? '');
           setSingleResult(result);
+          if (isGuest) await increment();
         }
       } catch (analysisError) {
         setError(
@@ -70,7 +84,7 @@ export default function ResultScreen() {
       }
     };
     analyze();
-  }, [imageUri, imageUriA, imageUriB, mode]);
+  }, [imageUri, imageUriA, imageUriB, mode, usageLoading, isGuest, limitReached, increment]);
 
   useEffect(() => {
     const result = mode === 'battle' ? comparisonResult : singleResult;
@@ -146,6 +160,31 @@ export default function ResultScreen() {
       <SafeAreaView style={styles.centered}>
         <ActivityIndicator size="large" color={BrandColors.emerald} />
         <Text style={styles.loadingText}>AI가 성분을 분석하고 있습니다...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (limitBlocked) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <Text style={styles.limitTitle}>오늘의 무료 분석 횟수를 모두 사용했습니다</Text>
+        <Text style={styles.limitDesc}>
+          로그인하면 횟수 제한 없이 무제한 분석이 가능합니다.
+        </Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.replace('/auth/sign-in')}
+          activeOpacity={0.8}
+        >
+          <LogIn size={20} color={BrandColors.white} />
+          <Text style={styles.loginButtonText}>로그인하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => router.replace('/')}
+        >
+          <Text style={styles.retryButtonText}>홈으로 돌아가기</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -244,6 +283,33 @@ const styles = StyleSheet.create({
     color: BrandColors.gray,
     fontSize: 14,
     textAlign: 'center',
+  },
+  limitTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: BrandColors.charcoal,
+    textAlign: 'center',
+  },
+  limitDesc: {
+    fontSize: 14,
+    color: BrandColors.gray,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: BrandColors.emerald,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  loginButtonText: {
+    color: BrandColors.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
   homeButton: {
     flexDirection: 'row',
